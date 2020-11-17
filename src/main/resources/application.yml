@@ -1,0 +1,14 @@
+my:
+  datasource:
+    settings: serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false&serverTimezone=GMT%2B8&allowMultiQueries=true&allowPublicKeyRetrieval=true
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/jpa_demo?${my.datasource.settings}
+    username: jpa_demo
+    password: jpa_demo
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+cao-mu:
+  token-exclude-url: /login
