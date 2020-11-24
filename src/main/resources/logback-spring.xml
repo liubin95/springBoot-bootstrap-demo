@@ -31,9 +31,10 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
             %n是换行符
         -->
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr([%X{REQUEST_ID}]){blue} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n</pattern>
+            <pattern>%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr([%X{REQUEST_ID}]){blue} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %replace(%m){'\n', ' '}%n</pattern>
         </layout>
     </appender>
+    <!--    TODO 异步处理日志-->
 
     <!-- 滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->
     <appender name="appLogAppender"
@@ -60,7 +61,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
         </rollingPolicy>
         <!-- 日志输出格式： -->
         <encoder>
-            <pattern>%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%15.15t] [%X{REQUEST_ID}] %-40.40logger{39} : %m%n
+            <pattern>%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%15.15t] [%X{REQUEST_ID}] %-40.40logger{39} : %replace(%m){'\n', ' '}%n
             </pattern>
         </encoder>
     </appender>
@@ -90,7 +91,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
     <logger name="org.springframework.boot.actuate.endpoint.jmx"
             level="WARN"/>
     <logger name="druid.sql.Statement"
-            level="INFO"/>
+            level="DEBUG"/>
     <!--
     root与logger是父子关系，没有特别定义则默认为root，任何一个类只会和一个logger对应，
     要么是定义的logger，要么是root，判断的关键在于找到这个logger，然后判断这个logger的appender和level。

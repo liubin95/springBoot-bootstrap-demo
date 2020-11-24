@@ -55,6 +55,7 @@ public class DemoController {
      */
     @PostMapping("add")
     public void add(@RequestBody UserEntity userEntity) {
+
         userService.save(userEntity);
     }
 
