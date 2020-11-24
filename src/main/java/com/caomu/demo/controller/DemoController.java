@@ -1,7 +1,12 @@
 package com.caomu.demo.controller;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +27,8 @@ import com.caomu.demo.service.UserService;
 @RestController
 public class DemoController {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger(DemoController.class);
+
     @Resource
     private TokenUtil<UserEntity> userEntityTokenUtil;
 
@@ -37,7 +44,7 @@ public class DemoController {
      * @return token
      */
     @PostMapping("login")
-    public String login(@RequestBody UserEntity userEntity) {
+    public String login(@Validated(UserEntity.Login.class) @RequestBody UserEntity userEntity) {
         return userService.login(userEntity);
     }
 
@@ -57,7 +64,7 @@ public class DemoController {
      * @param id id
      */
     @GetMapping("delete")
-    public void delete(Long id) {
+    public void delete(@Valid @NotNull(message = "【id】 不能为空") Long id) {
         userService.removeById(id);
     }
 
@@ -69,6 +76,7 @@ public class DemoController {
      */
     @PostMapping("page")
     public IPage<UserEntity> page(@RequestBody Page<UserEntity> page) {
+        LOGGER.debug("debug");
         return userService.pageAndSearch(page);
     }
 

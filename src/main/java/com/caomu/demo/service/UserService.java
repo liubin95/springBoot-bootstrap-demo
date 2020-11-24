@@ -14,8 +14,10 @@ import com.caomu.demo.entity.UserEntity;
 public interface UserService extends BaseService<UserEntity> {
 
     /**
-     * @param userEntity
-     * @return
+     * 模拟登陆
+     *
+     * @param userEntity 实体
+     * @return token
      */
     String login(UserEntity userEntity);
 }
