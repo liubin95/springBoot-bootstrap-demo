@@ -1,8 +1,6 @@
 package com.caomu.demo.controller;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.caomu.bootstrap.config.BusinessRuntimeException;
 import com.caomu.bootstrap.domain.Page;
 import com.caomu.bootstrap.token.TokenUtil;
 import com.caomu.demo.entity.UserEntity;
+import com.caomu.demo.query.IdQuery;
 import com.caomu.demo.service.UserService;
 
 /**
@@ -55,18 +55,19 @@ public class DemoController {
      */
     @PostMapping("add")
     public void add(@RequestBody UserEntity userEntity) {
-
         userService.save(userEntity);
     }
 
     /**
      * 逻辑删除演示
      *
-     * @param id id
+     * @param idQuery id
      */
     @GetMapping("delete")
-    public void delete(@Valid @NotNull(message = "【id】 不能为空") Long id) {
-        userService.removeById(id);
+    public void delete(@Validated(IdQuery.Default.class) IdQuery idQuery) {
+        if (!userService.removeById(idQuery.getId())) {
+            throw new BusinessRuntimeException("删除失败");
+        }
     }
 
     /**
