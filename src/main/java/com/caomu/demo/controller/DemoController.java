@@ -54,7 +54,7 @@ public class DemoController {
      * @param userEntity 对象
      */
     @PostMapping("add")
-    public void add(@RequestBody UserEntity userEntity) {
+    public void add(@Validated(UserEntity.Add.class) @RequestBody UserEntity userEntity) {
         userService.save(userEntity);
     }
 
@@ -64,7 +64,7 @@ public class DemoController {
      * @param idQuery id
      */
     @GetMapping("delete")
-    public void delete(@Validated(IdQuery.Default.class) IdQuery idQuery) {
+    public void delete(@Validated IdQuery idQuery) {
         if (!userService.removeById(idQuery.getId())) {
             throw new BusinessRuntimeException("删除失败");
         }
@@ -93,4 +93,11 @@ public class DemoController {
         return userEntityTokenUtil.resolveToken(token);
     }
 
+    /**
+     * 事务演示
+     */
+    @GetMapping("transactional")
+    public void transactional() {
+        userService.transactional();
+    }
 }

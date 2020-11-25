@@ -50,7 +50,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
             滚动时产生的文件的存放位置及文件名称 %d{yyyy-MM-dd}：按天进行日志滚动
             %i：当文件大小超过maxFileSize时，按照i进行文件滚动
             -->
-            <fileNamePattern>-${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
             <MaxHistory>10</MaxHistory>
             <!--
             当日志文件超过maxFileSize指定的大小是，根据上面提到的%i进行日志文件滚动 注意此处配置SizeBasedTriggeringPolicy是无法实现按文件大小进行滚动的，必须配置timeBasedFileNamingAndTriggeringPolicy

@@ -3,6 +3,7 @@ package com.caomu.demo.service.impl;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.caomu.bootstrap.config.BusinessRuntimeException;
@@ -39,5 +40,19 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserEntity> imp
         }
         // 省略密码之类的
         return userEntityTokenUtil.generateToken(entity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void transactional() {
+        final UserEntity entity = userEntityTokenUtil.resolveToken(getToken());
+        entity.setUserName("事务修改第一条");
+        this.updateById(entity);
+        this.transactionalSon(entity);
+    }
+
+    public void transactionalSon(UserEntity entity) {
+        entity.setUserLoginName("demoData1");
+        this.updateById(entity);
     }
 }

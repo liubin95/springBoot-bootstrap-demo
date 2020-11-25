@@ -20,4 +20,9 @@ public interface UserService extends BaseService<UserEntity> {
      * @return token
      */
     String login(UserEntity userEntity);
+
+    /**
+     * 事务演示
+     */
+    void transactional();
 }

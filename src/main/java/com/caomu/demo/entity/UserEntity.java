@@ -1,6 +1,7 @@
 package com.caomu.demo.entity;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.caomu.bootstrap.domain.BaseEntity;
@@ -28,30 +29,32 @@ public class UserEntity extends BaseEntity {
 
     }
 
-    private String userName;
-
     /**
      * 账号
      */
-    @NotBlank(message = "【userLoginName】 不能为空", groups = Login.class)
+    @NotBlank(message = "【userLoginName】 不能为空", groups = {Login.class, Add.class})
     private String userLoginName;
 
+    private String userName;
     /**
      * 密码
      */
-    @NotBlank(message = "【password】 不能为空", groups = Login.class)
+    @NotBlank(message = "【password】 不能为空", groups = {Login.class, Add.class})
     private String password;
-
-
     /**
      * 设备号
      */
+    @NotNull(message = "【deviceId】 不能为空", groups = Add.class)
     private UserDeviceEnum deviceId;
-
     /**
      * 比赛id
      */
+    @NotNull(message = "【marathonId】 不能为空", groups = Add.class)
     private Long marathonId;
+
+    public interface Add {
+
+    }
 
 
     public String getUserName() {

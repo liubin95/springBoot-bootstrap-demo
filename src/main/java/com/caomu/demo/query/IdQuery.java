@@ -12,7 +12,7 @@ public class IdQuery {
     /**
      * id
      */
-    @NotNull(groups = Default.class, message = "【ID不能为空】")
+    @NotNull(message = "【ID不能为空】")
     private Long id;
 
     public Long getId() {
@@ -21,9 +21,5 @@ public class IdQuery {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public interface Default {
-
     }
 }
