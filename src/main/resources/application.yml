@@ -8,9 +8,11 @@ spring:
     url: jdbc:mysql://localhost:3306/jpa_demo?${my.datasource.settings}
     username: jpa_demo
     password: jpa_demo
+  redis:
+    database: 10
 mybatis-plus:
   #    枚举的包地址
   type-enums-package: com.caomu.demo.enums
 cao-mu:
-  token-exclude-url: /login
   token-expires-time: P7D
+  token-exclude-url: /noLogin

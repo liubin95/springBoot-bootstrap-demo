@@ -24,17 +24,15 @@ public class UserEntity extends BaseEntity {
     public static final String PASSWORD = "password";
     public static final String DEVICE_ID = "device_id";
     public static final String MARATHON_ID = "marathon_id";
-
-    public interface Login {
-
-    }
-
+    public static final String ROLE_ID = "role_id";
     /**
      * 账号
      */
     @NotBlank(message = "【userLoginName】 不能为空", groups = {Login.class, Add.class})
     private String userLoginName;
-
+    /**
+     * 名称
+     */
     private String userName;
     /**
      * 密码
@@ -51,11 +49,19 @@ public class UserEntity extends BaseEntity {
      */
     @NotNull(message = "【marathonId】 不能为空", groups = Add.class)
     private Long marathonId;
+    /**
+     * 角色id
+     */
+    @NotNull(message = "【roleId】 不能为空", groups = Add.class)
+    private Long roleId;
 
-    public interface Add {
-
+    public Long getRoleId() {
+        return roleId;
     }
 
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
 
     public String getUserName() {
         return userName;
@@ -64,7 +70,6 @@ public class UserEntity extends BaseEntity {
     public void setUserName(String userName) {
         this.userName = userName;
     }
-
 
     public String getUserLoginName() {
         return userLoginName;
@@ -82,7 +87,6 @@ public class UserEntity extends BaseEntity {
         this.password = password;
     }
 
-
     public UserDeviceEnum getDeviceId() {
         return deviceId;
     }
@@ -97,5 +101,13 @@ public class UserEntity extends BaseEntity {
 
     public void setMarathonId(Long marathonId) {
         this.marathonId = marathonId;
+    }
+
+    public interface Login {
+
+    }
+
+    public interface Add {
+
     }
 }

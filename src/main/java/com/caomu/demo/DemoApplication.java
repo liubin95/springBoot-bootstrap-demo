@@ -5,6 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.caomu.bootstrap.annotation.CommonWeb;
 
+/**
+ * 启动类
+ *
+ * @author 刘斌
+ */
 @SpringBootApplication
 @CommonWeb
 public class DemoApplication {

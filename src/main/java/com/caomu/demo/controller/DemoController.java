@@ -2,8 +2,12 @@ package com.caomu.demo.controller;
 
 import javax.annotation.Resource;
 
+import org.redisson.api.RMapCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.caomu.bootstrap.config.BusinessRuntimeException;
+import com.caomu.bootstrap.domain.BaseUserDetail;
 import com.caomu.bootstrap.domain.Page;
 import com.caomu.bootstrap.token.TokenUtil;
 import com.caomu.demo.entity.UserEntity;
@@ -32,21 +37,15 @@ public class DemoController {
     @Resource
     private TokenUtil<UserEntity> userEntityTokenUtil;
 
-
     @Resource
     private UserService userService;
 
+    @Resource
+    private PasswordEncoder passwordEncoder;
 
-    /**
-     * 演示查询
-     *
-     * @param userEntity 用户信息
-     * @return token
-     */
-    @PostMapping("login")
-    public String login(@Validated(UserEntity.Login.class) @RequestBody UserEntity userEntity) {
-        return userService.login(userEntity);
-    }
+    @Resource
+    private RMapCache<Long, BaseUserDetail> authIdUserMap;
+
 
     /**
      * 新增演示
@@ -55,7 +54,42 @@ public class DemoController {
      */
     @PostMapping("add")
     public void add(@Validated(UserEntity.Add.class) @RequestBody UserEntity userEntity) {
+        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         userService.save(userEntity);
+    }
+
+    /**
+     * 刷新token
+     *
+     * @return token
+     */
+    @GetMapping("refreshToken")
+    public String refreshToken() {
+        final Object principal = SecurityContextHolder.getContext()
+                                                      .getAuthentication()
+                                                      .getPrincipal();
+        LOGGER.info(principal.toString());
+        return "";
+    }
+
+    /**
+     * 强制用户下线
+     *
+     * @param idQuery id
+     */
+    @GetMapping("logoutUser")
+    public void logoutUser(@Validated IdQuery idQuery) {
+        authIdUserMap.remove(idQuery.getId());
+    }
+
+    /**
+     * 不需要登录的接口
+     *
+     * @return 字符串
+     */
+    @GetMapping("noLogin")
+    public String noLogin() {
+        return "noLogin success";
     }
 
     /**
@@ -64,6 +98,7 @@ public class DemoController {
      * @param idQuery id
      */
     @GetMapping("delete")
+    @PreAuthorize("hasAuthority('OP::USER::DELETE')")
     public void delete(@Validated IdQuery idQuery) {
         if (!userService.removeById(idQuery.getId())) {
             throw new BusinessRuntimeException("删除失败");
@@ -77,6 +112,7 @@ public class DemoController {
      * @return 分页对象
      */
     @PostMapping("page")
+    @PreAuthorize("hasAuthority('MENU::USER::LIST')")
     public IPage<UserEntity> page(@RequestBody Page<UserEntity> page) {
         LOGGER.debug("debug");
         return userService.pageAndSearch(page);
