@@ -1,20 +1,5 @@
 package com.caomu.demo.controller;
 
-import javax.annotation.Resource;
-
-import org.redisson.api.RMapCache;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.caomu.bootstrap.config.BusinessRuntimeException;
 import com.caomu.bootstrap.domain.BaseUserDetail;
@@ -23,6 +8,17 @@ import com.caomu.bootstrap.token.TokenUtil;
 import com.caomu.demo.entity.UserEntity;
 import com.caomu.demo.query.IdQuery;
 import com.caomu.demo.service.UserService;
+import com.caomu.demo.vo.UserVo;
+import org.redisson.api.RMapCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * 例子控制器
@@ -30,9 +26,10 @@ import com.caomu.demo.service.UserService;
  * @author 刘斌
  */
 @RestController
-public class DemoController {
+@RequestMapping("user")
+public class UserController {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(DemoController.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     @Resource
     private TokenUtil<UserEntity> userEntityTokenUtil;
@@ -54,6 +51,7 @@ public class DemoController {
      */
     @PostMapping("add")
     public void add(@Validated(UserEntity.Add.class) @RequestBody UserEntity userEntity) {
+
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         userService.save(userEntity);
     }
@@ -65,6 +63,7 @@ public class DemoController {
      */
     @GetMapping("refreshToken")
     public String refreshToken() {
+
         final Object principal = SecurityContextHolder.getContext()
                                                       .getAuthentication()
                                                       .getPrincipal();
@@ -79,6 +78,7 @@ public class DemoController {
      */
     @GetMapping("logoutUser")
     public void logoutUser(@Validated IdQuery idQuery) {
+
         authIdUserMap.remove(idQuery.getId());
     }
 
@@ -89,7 +89,7 @@ public class DemoController {
      */
     @GetMapping("noLogin")
     public String noLogin() {
-        return "noLogin success";
+        throw new RuntimeException("");
     }
 
     /**
@@ -100,6 +100,11 @@ public class DemoController {
     @GetMapping("delete")
     @PreAuthorize("hasAuthority('OP::USER::DELETE')")
     public void delete(@Validated IdQuery idQuery) {
+
+        if (idQuery.getId()
+                   .equals(1L)) {
+            throw new BusinessRuntimeException("删除失败");
+        }
         if (!userService.removeById(idQuery.getId())) {
             throw new BusinessRuntimeException("删除失败");
         }
@@ -112,10 +117,10 @@ public class DemoController {
      * @return 分页对象
      */
     @PostMapping("page")
-    @PreAuthorize("hasAuthority('MENU::USER::LIST')")
-    public IPage<UserEntity> page(@RequestBody Page<UserEntity> page) {
-        LOGGER.debug("debug");
-        return userService.pageAndSearch(page);
+    //    @PreAuthorize("hasAuthority('MENU::USER::LIST')")
+    public IPage<UserVo> page(@RequestBody Page<UserEntity> page) {
+
+        return userService.pageAndSearchUser(page);
     }
 
     /**
@@ -126,14 +131,8 @@ public class DemoController {
      */
     @GetMapping("info")
     public UserEntity info(@RequestHeader String token) {
+
         return userEntityTokenUtil.resolveToken(token);
     }
 
-    /**
-     * 事务演示
-     */
-    @GetMapping("transactional")
-    public void transactional() {
-        userService.transactional();
-    }
 }

@@ -1,11 +1,22 @@
 package com.caomu.demo.service.impl;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.caomu.bootstrap.domain.Page;
+import com.caomu.bootstrap.service.BaseServiceImpl;
+import com.caomu.bootstrap.token.TokenUtil;
+import com.caomu.demo.domain.DemoBaseUserDetail;
+import com.caomu.demo.entity.AuthEntity;
+import com.caomu.demo.entity.MenuEntity;
+import com.caomu.demo.entity.RoleEntity;
+import com.caomu.demo.entity.UserEntity;
+import com.caomu.demo.mapper.RoleMapper;
+import com.caomu.demo.mapper.UserMapper;
+import com.caomu.demo.service.AuthService;
+import com.caomu.demo.service.MenuService;
+import com.caomu.demo.service.UserService;
+import com.caomu.demo.vo.MenuVo;
+import com.caomu.demo.vo.UserVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,20 +24,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.caomu.bootstrap.domain.BaseUserDetail;
-import com.caomu.bootstrap.service.BaseServiceImpl;
-import com.caomu.bootstrap.token.TokenUtil;
-import com.caomu.demo.entity.AuthEntity;
-import com.caomu.demo.entity.DemoBaseUserDetail;
-import com.caomu.demo.entity.RoleAuthMappingEntity;
-import com.caomu.demo.entity.UserEntity;
-import com.caomu.demo.mapper.AuthMapper;
-import com.caomu.demo.mapper.RoleAuthMappingMapper;
-import com.caomu.demo.mapper.UserMapper;
-import com.caomu.demo.service.UserService;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -39,57 +40,94 @@ import com.caomu.demo.service.UserService;
 @Service("UserServiceImpl")
 public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserEntity> implements UserService, UserDetailsService {
 
-    @Resource
-    private TokenUtil<UserEntity> userEntityTokenUtil;
+    private final TokenUtil<UserEntity> userEntityTokenUtil;
 
-    @Resource
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
-    @Resource
-    private RoleAuthMappingMapper roleAuthMappingMapper;
+    private final MenuService menuService;
 
-    @Resource
-    private AuthMapper authMapper;
+    private final AuthService authService;
+
+    private final RoleMapper roleMapper;
+
+    public UserServiceImpl(TokenUtil<UserEntity> userEntityTokenUtil,
+                           UserMapper userMapper,
+                           MenuService menuService,
+                           AuthService authService,
+                           RoleMapper roleMapper) {
+        this.userEntityTokenUtil = userEntityTokenUtil;
+        this.userMapper          = userMapper;
+        this.menuService         = menuService;
+        this.authService         = authService;
+        this.roleMapper          = roleMapper;
+    }
 
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void transactional() {
-        final UserEntity entity = getById(1333590744960049154L);
-        entity.setUserName("事务修改第一条");
-        this.updateById(entity);
-        this.transactionalSon(entity);
+    public IPage<UserVo> pageAndSearchUser(Page<UserEntity> page) {
+
+        final IPage<UserVo>     result         = new Page<>();
+        final IPage<UserEntity> userEntityPage = this.pageAndSearchAndFilter(page);
+        final Set<Long> roleIdSet = userEntityPage.getRecords()
+                                                  .stream()
+                                                  .map(UserEntity::getRoleId)
+                                                  .collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(roleIdSet)) {
+            return result;
+        }
+        final Map<Long, String> roleAndRoleNameMap = roleMapper.selectBatchIds(roleIdSet)
+                                                               .stream()
+                                                               .collect(Collectors.toMap(RoleEntity::getId, RoleEntity::getRoleName));
+        BeanUtils.copyProperties(userEntityPage, result);
+        final List<UserVo> userVoList = userEntityPage.getRecords()
+                                                      .stream()
+                                                      .map(item -> {
+                                                          final UserVo vo = new UserVo();
+                                                          BeanUtils.copyProperties(item, vo);
+                                                          vo.setRoleName(roleAndRoleNameMap.getOrDefault(item.getRoleId(), ""));
+                                                          return vo;
+                                                      })
+                                                      .collect(Collectors.toList());
+        result.setRecords(userVoList);
+        return result;
+
     }
 
-    public void transactionalSon(UserEntity entity) {
-        entity.setUserLoginName("demoData1");
-        this.updateById(entity);
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         final QueryWrapper<UserEntity> userEntityQueryWrapper = new QueryWrapper<>();
-        userEntityQueryWrapper.eq(UserEntity.USER_LOGIN_NAME, username);
+        userEntityQueryWrapper.eq(UserEntity.LOGIN_NAME, username);
         final UserEntity entity = userMapper.selectOne(userEntityQueryWrapper);
         if (entity == null) {
             throw new UsernameNotFoundException("用户名密码错误。");
         }
-        final QueryWrapper<RoleAuthMappingEntity> roleAuthMappingEntityQueryWrapper = new QueryWrapper<>();
-        roleAuthMappingEntityQueryWrapper.eq(RoleAuthMappingEntity.ROLE_ID, entity.getRoleId());
-        final List<RoleAuthMappingEntity> roleAuthMappingEntities = roleAuthMappingMapper.selectList(roleAuthMappingEntityQueryWrapper);
-        final Set<Long> authIdSet = roleAuthMappingEntities.stream()
-                                                           .map(RoleAuthMappingEntity::getAuthId)
-                                                           .collect(Collectors.toSet());
-        final List<AuthEntity> authList = authMapper.selectBatchIds(authIdSet);
+        final Long             roleId   = entity.getRoleId();
+        final List<AuthEntity> authList = authService.getAuthEntitiesByRoleId(roleId);
         final Set<GrantedAuthority> authoritySet = authList.stream()
                                                            .map(item -> (GrantedAuthority) new SimpleGrantedAuthority(item.getAuthCode()))
                                                            .collect(Collectors.toSet());
-        final BaseUserDetail baseUserDetail = new DemoBaseUserDetail();
+        final List<MenuEntity>      menuList    = menuService.getMenuEntitiesByRoleId(roleId);
+        final Set<GrantedAuthority> menuCodeSet = new HashSet<>();
+        final List<MenuVo>          menuVoList  = new ArrayList<>();
+        menuList.forEach(item -> {
+            final GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(item.getMenuCode());
+            menuCodeSet.add(grantedAuthority);
+            final MenuVo menuVo = new MenuVo();
+            BeanUtils.copyProperties(item, menuVo);
+            menuVoList.add(menuVo);
+        });
+        // 把菜单的数据增加到权限
+        authoritySet.addAll(menuCodeSet);
+        // 创建返回对象
+        final DemoBaseUserDetail baseUserDetail = new DemoBaseUserDetail();
         // 在此处生成token，后续会根据token的过期时间，设置redis的过期时间
         final String token = userEntityTokenUtil.generateToken(entity);
         baseUserDetail.setToken(token);
         BeanUtils.copyProperties(entity, baseUserDetail);
         baseUserDetail.setAuthSet(authoritySet);
+        baseUserDetail.setMenuList(menuVoList);
         return baseUserDetail;
     }
+
 }

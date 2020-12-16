@@ -1,11 +1,10 @@
 package com.caomu.demo.service.impl;
 
-import org.springframework.stereotype.Service;
-
 import com.caomu.bootstrap.service.BaseServiceImpl;
 import com.caomu.demo.entity.RoleEntity;
 import com.caomu.demo.mapper.RoleMapper;
 import com.caomu.demo.service.RoleService;
+import org.springframework.stereotype.Service;
 
 /**
  * <p>

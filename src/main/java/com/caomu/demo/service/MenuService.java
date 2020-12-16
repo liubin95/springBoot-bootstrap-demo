@@ -1,7 +1,7 @@
 package com.caomu.demo.service;
 
 import com.caomu.bootstrap.service.BaseService;
-import com.caomu.demo.entity.AuthEntity;
+import com.caomu.demo.entity.MenuEntity;
 
 import java.util.List;
 
@@ -11,15 +11,15 @@ import java.util.List;
  * </p>
  *
  * @author 刘斌
- * @since 2020-11-27
+ * @since 2020-12-14
  */
-public interface AuthService extends BaseService<AuthEntity> {
+public interface MenuService extends BaseService<MenuEntity> {
 
 
     /**
      * @param roleId
      * @return
      */
-    List<AuthEntity> getAuthEntitiesByRoleId(Long roleId);
+    List<MenuEntity> getMenuEntitiesByRoleId(Long roleId);
 
 }

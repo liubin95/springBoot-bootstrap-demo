@@ -1,9 +1,8 @@
 package com.caomu.demo;
 
+import com.caomu.bootstrap.annotation.CommonWeb;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.caomu.bootstrap.annotation.CommonWeb;
 
 /**
  * 启动类
@@ -15,6 +14,7 @@ import com.caomu.bootstrap.annotation.CommonWeb;
 public class DemoApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(DemoApplication.class, args);
     }
 

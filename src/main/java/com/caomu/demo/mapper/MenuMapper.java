@@ -1,18 +1,18 @@
 package com.caomu.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.caomu.demo.entity.RoleEntity;
+import com.caomu.demo.entity.MenuEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
- * 角色表 Mapper 接口
+ * 权限表 Mapper 接口
  * </p>
  *
  * @author 刘斌
- * @since 2020-11-27
+ * @since 2020-12-14
  */
 @Mapper
-public interface RoleMapper extends BaseMapper<RoleEntity> {
+public interface MenuMapper extends BaseMapper<MenuEntity> {
 
 }

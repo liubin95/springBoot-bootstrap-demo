@@ -22,11 +22,13 @@ public enum UserDeviceEnum {
      *
      */
     TWO(2, "二岁");
+
     /**
      * 数据库保存的值
      */
     @EnumValue
     private Integer value;
+
     /**
      * 显示的值
      */
@@ -34,8 +36,9 @@ public enum UserDeviceEnum {
     private String desc;
 
     UserDeviceEnum(Integer value, String desc) {
+
         this.value = value;
-        this.desc = desc;
+        this.desc  = desc;
     }
 
 }

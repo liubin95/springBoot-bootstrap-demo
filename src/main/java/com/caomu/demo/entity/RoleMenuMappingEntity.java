@@ -5,18 +5,18 @@ import com.caomu.bootstrap.domain.BaseEntity;
 
 /**
  * <p>
- * 角色和权限映射表
+ * 角色和菜单映射表
  * </p>
  *
  * @author 刘斌
- * @since 2020-11-27
+ * @since 2020-12-14
  */
-@TableName("role_auth_mapping")
-public class RoleAuthMappingEntity extends BaseEntity {
+@TableName("role_menu_mapping")
+public class RoleMenuMappingEntity extends BaseEntity {
 
     public static final String ROLE_ID = "role_id";
 
-    public static final String AUTH_ID = "auth_id";
+    public static final String MENU_ID = "menu_id";
 
     private static final long serialVersionUID = 1L;
 
@@ -26,9 +26,9 @@ public class RoleAuthMappingEntity extends BaseEntity {
     private Long roleId;
 
     /**
-     * 权限id
+     * 菜单id
      */
-    private Long authId;
+    private Long menuId;
 
     public Long getRoleId() {
 
@@ -40,14 +40,14 @@ public class RoleAuthMappingEntity extends BaseEntity {
         this.roleId = roleId;
     }
 
-    public Long getAuthId() {
+    public Long getMenuId() {
 
-        return authId;
+        return menuId;
     }
 
-    public void setAuthId(Long authId) {
+    public void setMenuId(Long menuId) {
 
-        this.authId = authId;
+        this.menuId = menuId;
     }
 
 }

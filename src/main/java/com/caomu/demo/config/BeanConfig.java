@@ -1,13 +1,12 @@
 package com.caomu.demo.config;
 
+import com.caomu.bootstrap.token.TokenUtil;
+import com.caomu.demo.entity.UserEntity;
+import com.caomu.demo.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
-import com.caomu.bootstrap.token.TokenUtil;
-import com.caomu.demo.entity.UserEntity;
-import com.caomu.demo.service.impl.UserServiceImpl;
 
 /**
  * 配置对象
@@ -24,6 +23,7 @@ public class BeanConfig {
      */
     @Bean
     public TokenUtil<UserEntity> userEntityTokenUtil() {
+
         return new TokenUtil<>(UserEntity.class);
     }
 
@@ -36,6 +36,8 @@ public class BeanConfig {
     @Bean
     @Autowired
     public UserDetailsService userDetailsService(UserServiceImpl service) {
+
         return service;
     }
+
 }
