@@ -1,6 +1,6 @@
 FROM java:8
 VOLUME /tmp
-ADD *.jar /app.jar
+ADD /target/*.jar /app.jar
 
 #定义时区参数
 ENV TZ=Asia/Shanghai
