@@ -1,6 +1,6 @@
-FROM java:8
+FROM openjdk:8-jdk-alpine
 VOLUME /tmp
-ADD *.jar /app.jar
+ADD /target/*.jar /app.jar
 
 #定义时区参数
 ENV TZ=Asia/Shanghai
