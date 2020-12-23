@@ -3,6 +3,8 @@ spring:
     url: jdbc:mysql://rm-8vbzbcg67j8o4e92q58870.mysql.zhangbei.rds.aliyuncs.com:3306/jpa_demo?${my.datasource.settings}
     username: jpa_demo
     password: ZAQ!2wsx
+  redis:
+    host: 172.17.0.4
 cao-mu:
   token-expires-time: P7D
   token-exclude-url: /noLogin
