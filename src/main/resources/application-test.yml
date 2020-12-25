@@ -4,7 +4,7 @@ spring:
     username: jpa_demo
     password: ZAQ!2wsx
   redis:
-    host: 172.17.0.4
+    host: redis
 cao-mu:
   token-expires-time: P7D
   token-exclude-url: /noLogin
