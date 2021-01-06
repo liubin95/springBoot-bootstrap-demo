@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @Service("UserServiceImpl")
 public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserEntity> implements UserService, UserDetailsService {
 
-    private final TokenUtil<UserEntity> userEntityTokenUtil;
+    private final TokenUtil tokenUtil;
 
     private final UserMapper userMapper;
 
@@ -50,16 +50,16 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserEntity> imp
 
     private final RoleMapper roleMapper;
 
-    public UserServiceImpl(TokenUtil<UserEntity> userEntityTokenUtil,
+    public UserServiceImpl(TokenUtil tokenUtil,
                            UserMapper userMapper,
                            MenuService menuService,
                            AuthService authService,
                            RoleMapper roleMapper) {
-        this.userEntityTokenUtil = userEntityTokenUtil;
-        this.userMapper          = userMapper;
-        this.menuService         = menuService;
-        this.authService         = authService;
-        this.roleMapper          = roleMapper;
+        this.tokenUtil   = tokenUtil;
+        this.userMapper  = userMapper;
+        this.menuService = menuService;
+        this.authService = authService;
+        this.roleMapper  = roleMapper;
     }
 
 
@@ -122,7 +122,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserEntity> imp
         // 创建返回对象
         final DemoBaseUserDetail baseUserDetail = new DemoBaseUserDetail();
         // 在此处生成token，后续会根据token的过期时间，设置redis的过期时间
-        final String token = userEntityTokenUtil.generateToken(entity);
+        final String token = tokenUtil.generateToken(entity.getId());
         baseUserDetail.setToken(token);
         BeanUtils.copyProperties(entity, baseUserDetail);
         baseUserDetail.setAuthSet(authoritySet);

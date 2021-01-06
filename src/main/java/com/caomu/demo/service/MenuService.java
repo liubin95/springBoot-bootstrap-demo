@@ -2,6 +2,7 @@ package com.caomu.demo.service;
 
 import com.caomu.bootstrap.service.BaseService;
 import com.caomu.demo.entity.MenuEntity;
+import com.caomu.demo.vo.MenuVo;
 
 import java.util.List;
 
@@ -21,5 +22,13 @@ public interface MenuService extends BaseService<MenuEntity> {
      * @return
      */
     List<MenuEntity> getMenuEntitiesByRoleId(Long roleId);
+
+    /**
+     * 查询子菜单
+     *
+     * @param pid 父级id
+     * @return 集合
+     */
+    List<MenuVo> queryMenuSon(Long pid);
 
 }

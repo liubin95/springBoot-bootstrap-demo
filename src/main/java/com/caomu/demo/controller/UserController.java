@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.caomu.bootstrap.config.BusinessRuntimeException;
 import com.caomu.bootstrap.domain.BaseUserDetail;
 import com.caomu.bootstrap.domain.Page;
-import com.caomu.bootstrap.token.TokenUtil;
 import com.caomu.demo.entity.UserEntity;
 import com.caomu.demo.query.IdQuery;
 import com.caomu.demo.service.UserService;
@@ -30,9 +29,6 @@ import javax.annotation.Resource;
 public class UserController {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-
-    @Resource
-    private TokenUtil<UserEntity> userEntityTokenUtil;
 
     @Resource
     private UserService userService;
@@ -123,16 +119,5 @@ public class UserController {
         return userService.pageAndSearchUser(page);
     }
 
-    /**
-     * 解析token的用户
-     *
-     * @param token token
-     * @return 信息
-     */
-    @GetMapping("info")
-    public UserEntity info(@RequestHeader String token) {
-
-        return userEntityTokenUtil.resolveToken(token);
-    }
 
 }

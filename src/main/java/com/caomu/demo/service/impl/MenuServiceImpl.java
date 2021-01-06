@@ -7,6 +7,8 @@ import com.caomu.demo.entity.RoleMenuMappingEntity;
 import com.caomu.demo.mapper.MenuMapper;
 import com.caomu.demo.mapper.RoleMenuMappingMapper;
 import com.caomu.demo.service.MenuService;
+import com.caomu.demo.vo.MenuVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,6 +47,20 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, MenuEntity> imp
                                                            .map(RoleMenuMappingEntity::getMenuId)
                                                            .collect(Collectors.toSet());
         return menuMapper.selectBatchIds(menuIdSet);
+    }
+
+    @Override
+    public List<MenuVo> queryMenuSon(Long pid) {
+        final QueryWrapper<MenuEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq(MenuEntity.PID, pid);
+        final List<MenuEntity> menuEntities = menuMapper.selectList(wrapper);
+        return menuEntities.stream()
+                           .map(item -> {
+                               final MenuVo vo = new MenuVo();
+                               BeanUtils.copyProperties(item, vo);
+                               return vo;
+                           })
+                           .collect(Collectors.toList());
     }
 
 }

@@ -35,7 +35,8 @@ public enum UserDeviceEnum {
     @JsonValue
     private String desc;
 
-    UserDeviceEnum(Integer value, String desc) {
+    UserDeviceEnum(Integer value,
+                   String desc) {
 
         this.value = value;
         this.desc  = desc;
