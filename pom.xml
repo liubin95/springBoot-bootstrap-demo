@@ -21,8 +21,8 @@
     <dependencies>
         <dependency>
             <groupId>com.caomu</groupId>
-            <artifactId>bootstrap</artifactId>
-            <version>0.0.1</version>
+            <artifactId>web-spring-boot-starter</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
